@@ -68,7 +68,7 @@ public:
     void retranslateUi(QWidget *Widget)
     {
         Widget->setWindowTitle(QApplication::translate("Widget", "Widget", nullptr));
-        pushButton->setText(QApplication::translate("Widget", "PushButton", nullptr));
+        pushButton->setText(QApplication::translate("Widget", "\351\200\211\345\217\226\346\226\207\344\273\266", nullptr));
     } // retranslateUi
 
 };
