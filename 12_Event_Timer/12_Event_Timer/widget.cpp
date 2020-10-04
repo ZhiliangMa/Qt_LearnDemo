@@ -10,6 +10,7 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
 
     // 启动定时器
+    // 定时器第一种使用方法，不灵活几乎不用这种。
     // 参数1：定时间隔，单位ms。
     timer1 = startTimer(1000);
     timer2 = startTimer(2000);
@@ -19,11 +20,13 @@ Widget::Widget(QWidget *parent)
     // 启动定时器
     timer3->start(500);
 
+    // 定时器计时溢出 关联timer3的回调处理事件
     connect(timer3, &QTimer::timeout, [=](){
         static int num3 = 1;
         ui->label_3->setText(QString::number(num3++));
     });
 
+    // 按键 关联timer3的暂停
     connect(ui->btnPause, &QPushButton::clicked, [=](){
         if(ui->btnPause->text() == "暂停")
         {
