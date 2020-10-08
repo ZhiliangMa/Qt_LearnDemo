@@ -17,9 +17,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
+    mycombobox.cpp \
     widget.cpp
 
 HEADERS += \
+    mycombobox.h \
     widget.h
 
 FORMS += \

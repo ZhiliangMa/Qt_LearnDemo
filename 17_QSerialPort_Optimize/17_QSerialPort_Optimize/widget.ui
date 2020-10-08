@@ -28,6 +28,13 @@
      </property>
     </widget>
    </item>
+   <item row="0" column="0" rowspan="3">
+    <widget class="QPlainTextEdit" name="txtRec">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
    <item row="3" column="2">
     <widget class="QPushButton" name="btnSend">
      <property name="text">
@@ -46,7 +53,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="cmbSerialPort"/>
+       <widget class="myComboBox" name="cmbSerialPort"/>
       </item>
       <item>
        <widget class="QWidget" name="widget_2" native="true">
@@ -202,11 +209,15 @@
      </property>
     </spacer>
    </item>
-   <item row="0" column="0" rowspan="3">
-    <widget class="QTextEdit" name="txtRec"/>
-   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>myComboBox</class>
+   <extends>QComboBox</extends>
+   <header>mycombobox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

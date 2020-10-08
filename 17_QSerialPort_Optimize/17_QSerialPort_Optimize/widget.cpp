@@ -7,23 +7,6 @@ Widget::Widget(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // 串口端口号列表
-    QStringList serialPortName;
-
-    // 自动扫描当前可用串口，返回值追加到字符数组中
-    foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts()){
-
-        serialPortName << info.portName();
-        //QString serialPortInfo;
-        //serialPortInfo = info.portName() + ": " + info.description();// 串口设备信息，芯片/驱动名称
-        //serialPortInfo = info.portName() + ": " + info.manufacturer();// 串口设备制造商
-        //serialPortInfo = info.portName() + ": " + info.serialNumber();// 串口设备的序列号，没什么用
-        //serialPortInfo = info.portName() + ": " + info.systemLocation();// 串口设备的系统位置，没什么用
-        //serialPortName << serialPortInfo;
-    }
-    // 可用串口号，显示到串口选择下拉框中
-    ui->cmbSerialPort->addItems(serialPortName);
-
     // 新建一串口对象
     mySerialPort = new QSerialPort(this);
     //QSerialPort(mySerialPort);
@@ -50,19 +33,18 @@ void Widget::serialPortRead_Slot()
     ui->txtRec->insertPlainText(recBuf);
     ui->txtRec->moveCursor(QTextCursor::End);
 
-    // 利用每次刷新文本的方式实现，但感觉效率会比当前位置插入低。也不会发生换行
+    // 利用一个QString去获取消息框文本，再将新接收到的消息添加到QString尾部，但感觉效率会比当前位置插入低。也不会发生换行
     /*QString txtBuf;
     txtBuf = ui->txtRec->toPlainText();
     txtBuf += recBuf;
     ui->txtRec->setPlainText(txtBuf);
     ui->txtRec->moveCursor(QTextCursor::End);*/
 
-    // 利用一个QString去缓存接收到的所有消息，效率会比上面高一点。但清空接收的时候，也要将其一并清空
+    // 利用一个QString去缓存接收到的所有消息，效率会比上面高一点。但清空接收的时候，要将QString一并清空。
     /*static QString txtBuf;
     txtBuf += recBuf;
     ui->txtRec->setPlainText(txtBuf);
     ui->txtRec->moveCursor(QTextCursor::End);*/
-
 }
 
 
