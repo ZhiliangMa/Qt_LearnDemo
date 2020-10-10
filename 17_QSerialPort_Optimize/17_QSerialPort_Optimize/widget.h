@@ -31,6 +31,10 @@ private slots:
 
     void on_btnClearSend_clicked();
 
+    void on_chkRec_stateChanged(int arg1);
+
+    void on_chkSend_stateChanged(int arg1);
+
 private:
     Ui::Widget *ui;
 };

@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
@@ -27,9 +28,8 @@ class Ui_Widget
 {
 public:
     QGridLayout *gridLayout_2;
-    QPushButton *btnClearRec;
     QPushButton *btnClearSend;
-    QPlainTextEdit *txtRec;
+    QCheckBox *chkSend;
     QPushButton *btnSend;
     QWidget *widget_1;
     QVBoxLayout *verticalLayout;
@@ -48,7 +48,11 @@ public:
     QLabel *lblSwitch;
     QPushButton *btnSwitch;
     QPlainTextEdit *txtSend;
+    QCheckBox *chkRec;
+    QPushButton *btnClearRec;
+    QPlainTextEdit *txtRec;
     QSpacerItem *verticalSpacer;
+    QSpacerItem *verticalSpacer_2;
 
     void setupUi(QWidget *Widget)
     {
@@ -57,26 +61,20 @@ public:
         Widget->resize(800, 480);
         gridLayout_2 = new QGridLayout(Widget);
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
-        btnClearRec = new QPushButton(Widget);
-        btnClearRec->setObjectName(QString::fromUtf8("btnClearRec"));
-
-        gridLayout_2->addWidget(btnClearRec, 2, 1, 1, 1);
-
         btnClearSend = new QPushButton(Widget);
         btnClearSend->setObjectName(QString::fromUtf8("btnClearSend"));
 
-        gridLayout_2->addWidget(btnClearSend, 4, 2, 1, 1);
+        gridLayout_2->addWidget(btnClearSend, 6, 2, 1, 1);
 
-        txtRec = new QPlainTextEdit(Widget);
-        txtRec->setObjectName(QString::fromUtf8("txtRec"));
-        txtRec->setReadOnly(true);
+        chkSend = new QCheckBox(Widget);
+        chkSend->setObjectName(QString::fromUtf8("chkSend"));
 
-        gridLayout_2->addWidget(txtRec, 0, 0, 3, 1);
+        gridLayout_2->addWidget(chkSend, 2, 2, 1, 1);
 
         btnSend = new QPushButton(Widget);
         btnSend->setObjectName(QString::fromUtf8("btnSend"));
 
-        gridLayout_2->addWidget(btnSend, 3, 2, 1, 1);
+        gridLayout_2->addWidget(btnSend, 5, 2, 1, 1);
 
         widget_1 = new QWidget(Widget);
         widget_1->setObjectName(QString::fromUtf8("widget_1"));
@@ -168,11 +166,31 @@ public:
         txtSend = new QPlainTextEdit(Widget);
         txtSend->setObjectName(QString::fromUtf8("txtSend"));
 
-        gridLayout_2->addWidget(txtSend, 3, 0, 2, 2);
+        gridLayout_2->addWidget(txtSend, 5, 0, 2, 2);
+
+        chkRec = new QCheckBox(Widget);
+        chkRec->setObjectName(QString::fromUtf8("chkRec"));
+
+        gridLayout_2->addWidget(chkRec, 2, 1, 1, 1);
+
+        btnClearRec = new QPushButton(Widget);
+        btnClearRec->setObjectName(QString::fromUtf8("btnClearRec"));
+
+        gridLayout_2->addWidget(btnClearRec, 4, 1, 1, 1);
+
+        txtRec = new QPlainTextEdit(Widget);
+        txtRec->setObjectName(QString::fromUtf8("txtRec"));
+        txtRec->setReadOnly(true);
+
+        gridLayout_2->addWidget(txtRec, 0, 0, 5, 1);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         gridLayout_2->addItem(verticalSpacer, 1, 1, 1, 1);
+
+        verticalSpacer_2 = new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
+
+        gridLayout_2->addItem(verticalSpacer_2, 3, 1, 1, 1);
 
 
         retranslateUi(Widget);
@@ -187,8 +205,8 @@ public:
     void retranslateUi(QWidget *Widget)
     {
         Widget->setWindowTitle(QApplication::translate("Widget", "Widget", nullptr));
-        btnClearRec->setText(QApplication::translate("Widget", "\346\270\205\347\251\272\346\216\245\346\224\266", nullptr));
         btnClearSend->setText(QApplication::translate("Widget", "\346\270\205\347\251\272\345\217\221\351\200\201", nullptr));
+        chkSend->setText(QApplication::translate("Widget", "16\350\277\233\345\210\266\345\217\221\351\200\201", nullptr));
         btnSend->setText(QApplication::translate("Widget", "\345\217\221\351\200\201", nullptr));
         lblSerialPort->setText(QApplication::translate("Widget", "\344\270\262\345\217\243\351\200\211\346\213\251", nullptr));
         lblBaudRate->setText(QApplication::translate("Widget", "\346\263\242\347\211\271\347\216\207", nullptr));
@@ -214,6 +232,8 @@ public:
 
         lblSwitch->setText(QApplication::translate("Widget", "\344\270\262\345\217\243\346\223\215\344\275\234", nullptr));
         btnSwitch->setText(QApplication::translate("Widget", "\346\211\223\345\274\200\344\270\262\345\217\243", nullptr));
+        chkRec->setText(QApplication::translate("Widget", "16\350\277\233\345\210\266\346\216\245\346\224\266", nullptr));
+        btnClearRec->setText(QApplication::translate("Widget", "\346\270\205\347\251\272\346\216\245\346\224\266", nullptr));
     } // retranslateUi
 
 };

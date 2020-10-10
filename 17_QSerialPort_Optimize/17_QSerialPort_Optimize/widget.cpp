@@ -1,5 +1,6 @@
 #include "widget.h"
 #include "ui_widget.h"
+#include <QDebug>
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -23,15 +24,40 @@ Widget::~Widget()
 // 串口接收显示，槽函数
 void Widget::serialPortRead_Slot()
 {
-    QString recBuf;
-    recBuf = QString(mySerialPort->readAll());
+    /*QString recBuf;
+    recBuf = QString(mySerialPort->readAll());*/
+
+    QByteArray recBuf;
+    recBuf = mySerialPort->readAll();
+
+    // 判断是否为16进制接收，将以后接收的数据全部转换为16进制显示（先前接收的部分在多选框槽函数中进行转换。最好多选框和接收区组成一个自定义控件，方便以后调用）
+    if(ui->chkRec->checkState() == false)
+    {
+        // 在当前位置插入文本，不会发生换行。如果没有移动光标到文件结尾，会导致文件超出当前界面显示范围，界面也不会向下滚动。
+        ui->txtRec->insertPlainText(recBuf);
+    }else{
+        // 16进制显示，并转换为大写
+        QString str1 = recBuf.toHex().toUpper();//.data();
+        // 添加空格
+        QString str2;
+        for(int i = 0; i<str1.length (); i+=2)
+        {
+            str2 += str1.mid (i,2);
+            str2 += " ";
+        }
+        ui->txtRec->insertPlainText(str2);
+        //ui->txtRec->insertPlainText(recBuf.toHex());
+    }
+
+    // 移动光标到文本结尾
+    ui->txtRec->moveCursor(QTextCursor::End);
 
     // 将文本追加到末尾显示，会导致插入的文本换行
     /*ui->txtRec->append(recBuf);*/
 
-    // 在当前位置插入文本，不会发生换行。如果没有移动光标到文件结尾，会导致文件超出当前界面显示范围，界面也不会向下滚动。
+    /*// 在当前位置插入文本，不会发生换行。如果没有移动光标到文件结尾，会导致文件超出当前界面显示范围，界面也不会向下滚动。
     ui->txtRec->insertPlainText(recBuf);
-    ui->txtRec->moveCursor(QTextCursor::End);
+    ui->txtRec->moveCursor(QTextCursor::End);*/
 
     // 利用一个QString去获取消息框文本，再将新接收到的消息添加到QString尾部，但感觉效率会比当前位置插入低。也不会发生换行
     /*QString txtBuf;
@@ -47,7 +73,7 @@ void Widget::serialPortRead_Slot()
     ui->txtRec->moveCursor(QTextCursor::End);*/
 }
 
-
+// 打开/关闭串口 槽函数
 void Widget::on_btnSwitch_clicked()
 {
 
@@ -106,11 +132,16 @@ void Widget::on_btnSwitch_clicked()
 
     // 想想用 substr strchr怎么从带有信息的字符串中提前串口号字符串
     // 初始化串口属性，设置 端口号、波特率、数据位、停止位、奇偶校验位数
-    mySerialPort->setPortName(ui->cmbSerialPort->currentText());
     mySerialPort->setBaudRate(baudRate);
     mySerialPort->setDataBits(dataBits);
     mySerialPort->setStopBits(stopBits);
     mySerialPort->setParity(checkBits);
+    //mySerialPort->setPortName(ui->cmbSerialPort->currentText());// 不匹配带有串口设备信息的文本
+    // 匹配带有串口设备信息的文本
+    QString spTxt = ui->cmbSerialPort->currentText();
+    spTxt = spTxt.section(':', 0, 0);//spTxt.mid(0, spTxt.indexOf(":"));
+    //qDebug() << spTxt;
+    mySerialPort->setPortName(spTxt);
 
     // 根据初始化好的串口属性，打开串口
     // 如果打开成功，反转打开按钮显示和功能。打开失败，无变化，并且弹出错误对话框。
@@ -132,9 +163,19 @@ void Widget::on_btnSwitch_clicked()
 
 }
 
+// 发送按键槽函数
+// 如果勾选16进制发送，按照asc2的16进制发送
 void Widget::on_btnSend_clicked()
 {
-    mySerialPort->write(ui->txtSend->toPlainText().toLocal8Bit().data());
+    // 判断是否为16进制发送，将发送区全部的asc2转换为16进制字符串显示，发送的时候转换为16进制发送
+    if(ui->chkSend->checkState() == false){
+        // 字符串形式发送
+        mySerialPort->write(ui->txtSend->toPlainText().toLocal8Bit().data());
+    }else{
+        // 16进制发送
+        mySerialPort->write(QByteArray::fromHex(ui->txtSend->toPlainText().toUtf8()).data());
+    }
+
 }
 
 void Widget::on_btnClearRec_clicked()
@@ -145,4 +186,78 @@ void Widget::on_btnClearRec_clicked()
 void Widget::on_btnClearSend_clicked()
 {
     ui->txtSend->clear();
+}
+
+// 先前接收的部分在多选框状态转换槽函数中进行转换。（最好多选框和接收区组成一个自定义控件，方便以后调用）
+void Widget::on_chkRec_stateChanged(int arg1)
+{
+    // 获取多选框状态，未选为0，选中为2
+    int status = arg1;
+    // 获取文本字符串
+    QString txtBuf = ui->txtRec->toPlainText();
+
+    // 为0时，多选框未被勾选，接收区先前接收的16进制数据转换为asc2字符串格式
+    if(status == 0){
+
+        QByteArray str1 = QByteArray::fromHex(txtBuf.toUtf8());
+        // 文本控件清屏，显示新文本
+        ui->txtRec->clear();
+        ui->txtRec->insertPlainText(str1);
+        // 移动光标到文本结尾
+        ui->txtRec->moveCursor(QTextCursor::End);
+
+    }else{// 不为0时，多选框被勾选，接收区先前接收asc2字符串转换为16进制显示
+
+        QByteArray str1 = txtBuf.toUtf8().toHex().toUpper();
+        // 添加空格
+        QByteArray str2;
+        for(int i = 0; i<str1.length (); i+=2)
+        {
+            str2 += str1.mid (i,2);
+            str2 += " ";
+        }
+        // 文本控件清屏，显示新文本
+        ui->txtRec->clear();
+        ui->txtRec->insertPlainText(str2);
+        // 移动光标到文本结尾
+        ui->txtRec->moveCursor(QTextCursor::End);
+
+    }
+}
+
+// 先前发送区的部分在多选框状态转换槽函数中进行转换。（最好多选框和发送区组成一个自定义控件，方便以后调用）
+void Widget::on_chkSend_stateChanged(int arg1)
+{
+    // 获取多选框状态，未选为0，选中为2
+    int status = arg1;
+    // 获取文本字符串
+    QString txtBuf = ui->txtSend->toPlainText();
+
+    // 为0时，多选框未被勾选，将先前的发送区的16进制字符串转换为asc2字符串
+    if(status == 0){
+
+        QByteArray str1 = QByteArray::fromHex(txtBuf.toUtf8());
+        // 文本控件清屏，显示新文本
+        ui->txtSend->clear();
+        ui->txtSend->insertPlainText(str1);
+        // 移动光标到文本结尾
+        ui->txtSend->moveCursor(QTextCursor::End);
+
+    }else{// 多选框被勾选，将先前的发送区的asc2字符串转换为16进制字符串
+
+        QByteArray str1 = txtBuf.toUtf8().toHex().toUpper();
+        // 添加空格
+        QByteArray str2;
+        for(int i = 0; i<str1.length (); i+=2)
+        {
+            str2 += str1.mid (i,2);
+            str2 += " ";
+        }
+        // 文本控件清屏，显示新文本
+        ui->txtSend->clear();
+        ui->txtSend->insertPlainText(str2);
+        // 移动光标到文本结尾
+        ui->txtSend->moveCursor(QTextCursor::End);
+
+    }
 }
